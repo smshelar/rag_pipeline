@@ -29,11 +29,13 @@ def main():
 
 
 def load_documents(file_dir=DATA_PATH):
+    # Load PDFs from the specified directory
     document_loader = PyPDFDirectoryLoader(file_dir)
     return document_loader.load()
 
 
 def split_documents(documents: list[Document]):
+    # Split documents into chunks to optimize embeddings
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=800,
         chunk_overlap=80,
@@ -49,15 +51,15 @@ def add_to_chroma(chunks: list[Document], streamlit_flag=False):
         persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
     )
 
-    # Calculate Page IDs.
+    # Assign unique IDs to document chunks
     chunks_with_ids = calculate_chunk_ids(chunks)
 
-    # Add or Update the documents.
+    # Retrieve existing document IDs from the database
     existing_items = db.get(include=[])  # IDs are always included by default
     existing_ids = set(existing_items["ids"])
     print(f"Number of existing documents in DB: {len(existing_ids)}")
 
-    # Only add documents that don't exist in the DB.
+    # Filter out chunks that are already in the database
     new_chunks = []
     for chunk in chunks_with_ids:
         if chunk.metadata["id"] not in existing_ids:
@@ -70,6 +72,7 @@ def add_to_chroma(chunks: list[Document], streamlit_flag=False):
             print(f"👉 Adding new documents: {len(new_chunks)}")
 
         new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
+        # Add new chunks to the database
         for chunk in tqdm(new_chunks, desc="Creating embeddings"):
             db.add_documents([chunk], ids=[chunk.metadata["id"]])
         db.persist()
@@ -80,7 +83,7 @@ def add_to_chroma(chunks: list[Document], streamlit_flag=False):
 def calculate_chunk_ids(chunks):
     # This will create IDs like "data/monopoly.pdf:6:2"
     # Page Source : Page Number : Chunk Index
-
+    # Generate unique IDs for each document chunk based on file and page number
     last_page_id = None
     current_chunk_index = 0
 
@@ -90,6 +93,7 @@ def calculate_chunk_ids(chunks):
         current_page_id = f"{source}:{page}"
 
         # If the page ID is the same as the last one, increment the index.
+        # Increment index if the page is the same as the last one
         if current_page_id == last_page_id:
             current_chunk_index += 1
         else:
@@ -106,6 +110,7 @@ def calculate_chunk_ids(chunks):
 
 
 def clear_database():
+    # Remove the existing database if it exists
     if os.path.exists(CHROMA_PATH):
         shutil.rmtree(CHROMA_PATH)
 

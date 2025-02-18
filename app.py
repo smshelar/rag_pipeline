@@ -4,6 +4,7 @@ from query import query_rag
 from load_model import *
 from time import sleep
 
+# Configure Streamlit page layout and title
 st.set_page_config(layout='centered', page_title=f'PDF Chatbot')
 st.title("PDF Chatbot")
 
@@ -26,6 +27,7 @@ def main():
     # Determine button color based on CHROMA_PATH
     button_color = "black" if not os.path.exists(CHROMA_PATH) else "red"
 
+    # Custom button styling for the chatbot UI
     st.markdown(
         f"""
         <style>
@@ -51,7 +53,7 @@ def main():
         unsafe_allow_html=True
     )
 
-    # Sidebar content
+    # Sidebar additional UI elements
     with st.sidebar:
         # Create a placeholder for spacing
         st.markdown("<br>" * 15, unsafe_allow_html=True)
@@ -72,7 +74,7 @@ def main():
 
     if 'processed' not in st.session_state:
         st.session_state.processed = False  # Flag to track if preprocessing is done
-    # Example of File Handling
+    # Process uploaded or selected PDFs
     if pdf_files and not st.session_state.processed:
         st.toast("📄 Files Uploaded Successfully!", icon="✅")
 
