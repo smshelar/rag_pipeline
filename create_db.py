@@ -7,14 +7,13 @@ from langchain.schema.document import Document
 from embedding_function import get_embedding_function
 from langchain.vectorstores.chroma import Chroma
 from tqdm import tqdm
-
+import streamlit as st
 
 CHROMA_PATH = "chroma"
 DATA_PATH = "docs"
 
 
 def main():
-
     # Check if the database should be cleared (using the --clear flag).
     parser = argparse.ArgumentParser()
     parser.add_argument("--reset", action="store_true", help="Reset the database.")
@@ -29,8 +28,8 @@ def main():
     add_to_chroma(chunks)
 
 
-def load_documents():
-    document_loader = PyPDFDirectoryLoader(DATA_PATH)
+def load_documents(file_dir=DATA_PATH):
+    document_loader = PyPDFDirectoryLoader(file_dir)
     return document_loader.load()
 
 
@@ -44,7 +43,7 @@ def split_documents(documents: list[Document]):
     return text_splitter.split_documents(documents)
 
 
-def add_to_chroma(chunks: list[Document]):
+def add_to_chroma(chunks: list[Document], streamlit_flag=False):
     # Load the existing database.
     db = Chroma(
         persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
@@ -65,7 +64,11 @@ def add_to_chroma(chunks: list[Document]):
             new_chunks.append(chunk)
 
     if len(new_chunks):
-        print(f"👉 Adding new documents: {len(new_chunks)}")
+        if streamlit_flag:
+            st.toast(f"⚙️ Adding new documents: {new_chunks}", icon="⏳")
+        else:
+            print(f"👉 Adding new documents: {len(new_chunks)}")
+
         new_chunk_ids = [chunk.metadata["id"] for chunk in new_chunks]
         for chunk in tqdm(new_chunks, desc="Creating embeddings"):
             db.add_documents([chunk], ids=[chunk.metadata["id"]])
@@ -75,7 +78,6 @@ def add_to_chroma(chunks: list[Document]):
 
 
 def calculate_chunk_ids(chunks):
-
     # This will create IDs like "data/monopoly.pdf:6:2"
     # Page Source : Page Number : Chunk Index
 

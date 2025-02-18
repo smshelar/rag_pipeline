@@ -1,4 +1,3 @@
-import numpy as np
 from langchain.vectorstores import Chroma
 from embedding_function import get_embedding_function
 from sklearn.metrics.pairwise import cosine_similarity
@@ -45,7 +44,8 @@ def compare_documents(query_1: str, query_2: str):
 
 
 if __name__ == "__main__":
-    query_1 = "Analyze the potential environmental impact of the proposed development, specifically focusing on the impact on the Douglas River?"
+    query_1 = ("Analyze the potential environmental impact of the proposed development, specifically focusing on the "
+               "impact on the Douglas River?")
     query_2 = "increased flood risk"
 
     comparison_result = compare_documents(query_1, query_2)

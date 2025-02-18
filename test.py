@@ -1,10 +1,11 @@
 import pytest
 from create_db import main
 from query import query_rag
-import langchain_community.llms.ollama
+from langchain_community.llms.ollama import Ollama
 from langchain.vectorstores import Chroma
 
 EVAL_PROMPT = "Evaluate the response: Expected: {expected_response}, Actual: {actual_response}"  # Define the prompt
+
 
 @pytest.fixture(scope="module")
 def db():
@@ -16,7 +17,8 @@ def db():
 def test_database_population():
     """Ensure documents are successfully added to the vector database."""
     db = Chroma(persist_directory="chroma")  # Load DB
-    assert len(db.get()) > 0, "Database should contain at least one document."
+    assert db._collection.count() > 0, "Database should contain at least one document."
+
 
 def test_query_response():
     """Ensure the query function returns relevant results."""
@@ -40,7 +42,7 @@ def query_and_validate(question: str, expected_response: str):
     )
 
     model = Ollama(model="mistral")
-    evaluation_results_str = model.generate(prompt)  # Use `generate()` instead of `invoke()`
+    evaluation_results_str = model.invoke(prompt)  # Use `generate()` instead of `invoke()`
     evaluation_results_str_cleaned = evaluation_results_str.strip().lower()
 
     print(prompt)
@@ -53,6 +55,7 @@ def query_and_validate(question: str, expected_response: str):
         return False
     else:
         raise ValueError("Invalid evaluation result. Cannot determine if 'true' or 'false'.")
+
 
 @pytest.fixture(scope="module", autouse=True)
 def cleanup():
