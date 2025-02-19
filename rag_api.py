@@ -8,7 +8,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.prompts import ChatPromptTemplate
 from langchain_community.llms.ollama import Ollama
 from sklearn.metrics.pairwise import cosine_similarity
-
+import asyncio
 from embedding_function import get_embedding_function
 
 # Constants

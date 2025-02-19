@@ -92,6 +92,7 @@ def main():
         st.session_state['rag_response'] = []
 
     def get_text():
+        st.markdown("### 🤔 Ask me anything?")
         input_text = st.chat_input("Say something")
         return input_text
 
@@ -102,17 +103,17 @@ def main():
         output = output.lstrip("\n")
 
         # Store the output
-        st.session_state.user_input.append(output)
-        st.session_state.rag_response.append(user_input)
+        st.session_state.user_input.append(user_input)
+        st.session_state.rag_response.append(output)
 
     if st.session_state['user_input']:
         for i in range(len(st.session_state['user_input'])):
-            # This function displays rag response
-            message(st.session_state['rag_response'][i],
-                    avatar_style="miniavs", is_user=True, key=str(i) + 'data_by_user')
+                # Display user query
+                message(st.session_state['user_input'][i],
+                        avatar_style="miniavs", is_user=True, key=str(i) + 'data_by_user')
 
-            # This function displays user input
-            message(st.session_state["user_input"][i], key=str(i), avatar_style="icons")
-
+                # Display model response
+                message(st.session_state["rag_response"][i],
+                        key=str(i), avatar_style="bottts")
 
 main()
