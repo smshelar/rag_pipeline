@@ -2,13 +2,15 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
 import shutil
+__import__("pysqtite3")
+import sys
+sys.modules['sqlite3']= sys.modules.pop( 'pysqlite3')
 from langchain.vectorstores import Chroma
 from langchain.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.prompts import ChatPromptTemplate
 from langchain_community.llms.ollama import Ollama
 from sklearn.metrics.pairwise import cosine_similarity
-import asyncio
 from embedding_function import get_embedding_function
 
 # Constants

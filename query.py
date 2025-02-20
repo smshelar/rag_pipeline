@@ -1,4 +1,7 @@
 import argparse
+__import__("pysqtite3")
+import sys
+sys.modules['sqlite3']= sys.modules.pop( 'pysqlite3')
 from langchain.vectorstores.chroma import Chroma
 from langchain.prompts import ChatPromptTemplate
 from langchain_community.llms.ollama import Ollama
