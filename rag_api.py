@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
 import shutil
-__import__("pysqtite3")
+__import__("pysqlite3")
 import sys
 sys.modules['sqlite3']= sys.modules.pop( 'pysqlite3')
 from langchain.vectorstores import Chroma
